@@ -44,34 +44,41 @@ public class Connect4TDDSpec {
 
     @Test
     public void whenDiscOutsideBoardThenRuntimeException() {
+        assertThatThrownBy(() -> tested.putDiscInColumn(-1)).isInstanceOf(RuntimeException.class);
 
-
+        assertThrows(RuntimeException.class, () -> {
+            for (int i = 0; i <= 7; i++) {
+                tested.putDiscInColumn(6);
+            }
+        });
     }
 
     @Test
     public void whenFirstDiscInsertedInColumnThenPositionIsZero() {
-
         assertThat(tested.putDiscInColumn(0)).isEqualTo(0);
-
     }
 
     @Test
     public void whenSecondDiscInsertedInColumnThenPositionIsOne() {
-
-
+        for (int i = 1; i <= 7; i++) {
+            tested.putDiscInColumn(i);
+            assertThat(tested.putDiscInColumn(i)).isEqualTo(i);
+        }
     }
 
     @Test
     public void whenDiscInsertedThenNumberOfDiscsIncreases() {
 
+        int discosiniciales = 0;
 
-
+        for (int i = 0; i < 7; i++) {
+            tested.putDiscInColumn(i);
+            assertThat(tested.getNumberOfDiscs()).isEqualTo(discosiniciales + 1 + i);
+        }
     }
 
     @Test
     public void whenNoMoreRoomInColumnThenRuntimeException() {
-
-
 
     }
 
@@ -98,7 +105,6 @@ public class Connect4TDDSpec {
 
     @Test
     public void whenAskedForCurrentPlayerTheOutputNotice() {
-
 
 
     }
