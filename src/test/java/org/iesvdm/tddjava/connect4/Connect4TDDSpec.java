@@ -9,8 +9,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class Connect4TDDSpec {
@@ -34,6 +33,10 @@ public class Connect4TDDSpec {
     @Test
     public void whenTheGameStartsTheBoardIsEmpty() {
 
+        String expected = """
+                """;
+
+        assertThat(output.toString().replaceAll("\r", "")).isEqualTo(expected);
     }
 
     /*
@@ -60,10 +63,25 @@ public class Connect4TDDSpec {
 
     @Test
     public void whenSecondDiscInsertedInColumnThenPositionIsOne() {
-        for (int i = 1; i <= 7; i++) {
-            tested.putDiscInColumn(i);
-            assertThat(tested.putDiscInColumn(i)).isEqualTo(i);
-        }
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(0);
+
+        String expected = """
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                |R| | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                |G| | | | | | |
+                |R| | | | | | |
+                """;
+
+        assertThat(output.toString().replaceAll("\r","")).isEqualTo(expected);
     }
 
     @Test
@@ -79,7 +97,17 @@ public class Connect4TDDSpec {
 
     @Test
     public void whenNoMoreRoomInColumnThenRuntimeException() {
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(0);
 
+        assertThrows(RuntimeException.class, () -> {
+                tested.putDiscInColumn(0);
+            }
+        );
     }
 
     /*
@@ -90,12 +118,41 @@ public class Connect4TDDSpec {
 
     @Test
     public void whenFirstPlayerPlaysThenDiscColorIsRed() {
+        tested.putDiscInColumn(0);
 
+        String expected = """
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                |R| | | | | | |
+                """;
+
+        assertThat(output.toString().replaceAll("\r","")).isEqualTo(expected);
     }
 
     @Test
     public void whenSecondPlayerPlaysThenDiscColorIsGreen() {
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(1);
 
+        String expected = """
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                |R| | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                |R|G| | | | | |
+                """;
+
+        assertThat(output.toString().replaceAll("\r","")).isEqualTo(expected);
     }
 
     /*
@@ -105,8 +162,10 @@ public class Connect4TDDSpec {
 
     @Test
     public void whenAskedForCurrentPlayerTheOutputNotice() {
+        String currentPlayer = tested.getCurrentPlayer();
+        String mensajeOutput = String.format("Player %s turn%n",currentPlayer);
 
-
+        assertThat(output.toString()).isEqualTo(mensajeOutput);
     }
 
     @Test
@@ -121,11 +180,58 @@ public class Connect4TDDSpec {
     @Test
     public void whenTheGameStartsItIsNotFinished() {
 
+        tested.putDiscInColumn(0);
+
+        String expected = """
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                |R| | | | | | |
+                """;
+
+        assertThat(output.toString().replaceAll("\r","")).isEqualTo(expected);
+
+        tested.putDiscInColumn(1);
+
+        String expected2 = """
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                |R| | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                | | | | | | | |
+                |R|G| | | | | |
+                """;
+
+        assertThat(output.toString().replaceAll("\r","")).isEqualTo(expected2);
     }
 
     @Test
     public void whenNoDiscCanBeIntroducedTheGamesIsFinished() {
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(1);
+        tested.putDiscInColumn(1);
+        tested.putDiscInColumn(2);
+        tested.putDiscInColumn(6);
+        tested.putDiscInColumn(2);
+        tested.putDiscInColumn(2);
+        tested.putDiscInColumn(3);
+        tested.putDiscInColumn(6);
+        tested.putDiscInColumn(3);
+        tested.putDiscInColumn(6);
+        tested.putDiscInColumn(3);
+        tested.putDiscInColumn(3);
 
+        System.out.println(tested.getWinner());
+
+       assertTrue(tested.isFinished());
     }
 
     /*
@@ -136,6 +242,16 @@ public class Connect4TDDSpec {
     @Test
     public void when4VerticalDiscsAreConnectedThenThatPlayerWins() {
 
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(1);
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(1);
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(1);
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(1);
+
+        assertEquals(tested.getWinner(), "R");
     }
 
     /*
@@ -145,7 +261,15 @@ public class Connect4TDDSpec {
 
     @Test
     public void when4HorizontalDiscsAreConnectedThenThatPlayerWins() {
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(1);
+        tested.putDiscInColumn(1);
+        tested.putDiscInColumn(2);
+        tested.putDiscInColumn(2);
+        tested.putDiscInColumn(3);
 
+        assertEquals(tested.getWinner(), "R");
     }
 
     /*
@@ -155,11 +279,40 @@ public class Connect4TDDSpec {
 
     @Test
     public void when4Diagonal1DiscsAreConnectedThenThatPlayerWins() {
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(1);
+        tested.putDiscInColumn(1);
+        tested.putDiscInColumn(2);
+        tested.putDiscInColumn(6);
+        tested.putDiscInColumn(2);
+        tested.putDiscInColumn(2);
+        tested.putDiscInColumn(3);
+        tested.putDiscInColumn(6);
+        tested.putDiscInColumn(3);
+        tested.putDiscInColumn(6);
+        tested.putDiscInColumn(3);
+        tested.putDiscInColumn(3);
 
+        assertEquals(tested.getWinner(), "R");
     }
 
     @Test
     public void when4Diagonal2DiscsAreConnectedThenThatPlayerWins() {
+        tested.putDiscInColumn(6);
+        tested.putDiscInColumn(5);
+        tested.putDiscInColumn(5);
+        tested.putDiscInColumn(4);
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(4);
+        tested.putDiscInColumn(4);
+        tested.putDiscInColumn(3);
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(3);
+        tested.putDiscInColumn(0);
+        tested.putDiscInColumn(3);
+        tested.putDiscInColumn(3);
 
+        System.out.println(output.toString());
+        assertEquals(tested.getWinner(), "R");
     }
 }
